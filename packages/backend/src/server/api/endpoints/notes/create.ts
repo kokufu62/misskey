@@ -130,6 +130,11 @@ export const meta = {
 			code: 'CONTAINS_TOO_MANY_MENTIONS',
 			id: '4de0363a-3046-481b-9b0f-feff3e211025',
 		},
+		invalidCreatedAt: {
+			message: 'Invalid createdAt format.',
+			code: 'INVALID_CREATED_AT',
+			id: 'd4e8f8e1-8a5e-46ed-b625-06271cafd3d3',
+		},
 	},
 } as const;
 
@@ -149,6 +154,7 @@ export const paramDef = {
 		replyId: { type: 'string', format: 'misskey:id', nullable: true },
 		renoteId: { type: 'string', format: 'misskey:id', nullable: true },
 		channelId: { type: 'string', format: 'misskey:id', nullable: true },
+		createdAt: { type: 'string', format: 'date-time', nullable: true },
 
 		// anyOf内にバリデーションを書いても最初の一つしかチェックされない
 		// See https://github.com/misskey-dev/misskey/pull/10082
@@ -360,10 +366,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				}
 			}
 
+			// createdAtの形式チェック
+			if (ps.createdAt != null && isNaN(Date.parse(ps.createdAt))) {
+				throw new ApiError(meta.errors.invalidCreatedAt);
+			}
+
 			// 投稿を作成
 			try {
 				const note = await this.noteCreateService.create(me, {
-					createdAt: new Date(),
+					createdAt: ps.createdAt ? new Date(ps.createdAt) : new Date(),
 					files: files,
 					poll: ps.poll ? {
 						choices: ps.poll.choices,
