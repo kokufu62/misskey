@@ -44,9 +44,9 @@ describe('api:notes/create', () => {
 					.toBe(INVALID);
 			});
 
-			test('over 3000 characters post', async () => {
-				expect(v({ text: await tooLong }))
-					.toBe(INVALID);
+			test('over 30000 characters post', async () => {
+				const tooLong = 'a'.repeat(30001); // 30001文字のテキストを生成
+				expect(v({ text: tooLong })).toBe(INVALID);
 			});
 
 			test('whitespace-only post', () => {
