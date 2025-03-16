@@ -108,7 +108,7 @@ import XDrawerMenu from '@/ui/_common_/navbar-for-mobile.vue';
 import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
 import { i18n } from '@/i18n.js';
-import { $i } from '@/account.js';
+import { $i } from '@/i.js';
 import { provideMetadataReceiver, provideReactiveMetadata } from '@/page.js';
 import { deviceKind } from '@/utility/device-kind.js';
 import { miLocalStorage } from '@/local-storage.js';
@@ -176,19 +176,6 @@ if (window.innerWidth > 1024) {
 		miLocalStorage.removeItem('ui_temp');
 		location.reload();
 	}
-}
-
-if (prefer.s.widgets.length === 0) {
-	prefer.commit('widgets', [{
-		name: 'calendar',
-		id: 'a', place: 'right', data: {},
-	}, {
-		name: 'notifications',
-		id: 'b', place: 'right', data: {},
-	}, {
-		name: 'trends',
-		id: 'c', place: 'right', data: {},
-	}]);
 }
 
 onMounted(() => {

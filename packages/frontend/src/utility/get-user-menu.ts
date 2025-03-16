@@ -13,7 +13,7 @@ import { i18n } from '@/i18n.js';
 import { copyToClipboard } from '@/utility/copy-to-clipboard.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
-import { $i, iAmModerator } from '@/account.js';
+import { $i, iAmModerator } from '@/i.js';
 import { notesSearchAvailable, canSearchNonLocalNotes } from '@/utility/check-permissions.js';
 import { antennasCache, rolesCache, userListsCache } from '@/cache.js';
 import { mainRouter } from '@/router/main.js';
@@ -401,7 +401,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 
 	if (prefer.s.devMode) {
 		menuItems.push({ type: 'divider' }, {
-			icon: 'ti ti-id',
+			icon: 'ti ti-hash',
 			text: i18n.ts.copyUserId,
 			action: () => {
 				copyToClipboard(user.id);

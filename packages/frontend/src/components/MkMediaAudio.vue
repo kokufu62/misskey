@@ -98,7 +98,7 @@ import * as os from '@/os.js';
 import bytes from '@/filters/bytes.js';
 import { hms } from '@/filters/hms.js';
 import MkMediaRange from '@/components/MkMediaRange.vue';
-import { $i, iAmModerator } from '@/account.js';
+import { $i, iAmModerator } from '@/i.js';
 import { prefer } from '@/preferences.js';
 
 const props = defineProps<{
@@ -242,7 +242,7 @@ function showMenu(ev: MouseEvent) {
 
 	if (prefer.s.devMode) {
 		menu.push({ type: 'divider' }, {
-			icon: 'ti ti-id',
+			icon: 'ti ti-hash',
 			text: i18n.ts.copyFileId,
 			action: () => {
 				copyToClipboard(props.audio.id);
