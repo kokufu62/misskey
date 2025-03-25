@@ -16,6 +16,8 @@ import MkTime from './global/MkTime.vue';
 import MkUrl from './global/MkUrl.vue';
 import I18n from './global/I18n.vue';
 import RouterView from './global/RouterView.vue';
+import NestedRouterView from './global/NestedRouterView.vue';
+import StackingRouterView from './global/StackingRouterView.vue';
 import MkLoading from './global/MkLoading.vue';
 import MkError from './global/MkError.vue';
 import MkAd from './global/MkAd.vue';
@@ -23,6 +25,8 @@ import MkPageHeader from './global/MkPageHeader.vue';
 import MkSpacer from './global/MkSpacer.vue';
 import MkStickyContainer from './global/MkStickyContainer.vue';
 import MkLazy from './global/MkLazy.vue';
+import PageWithHeader from './global/PageWithHeader.vue';
+import PageWithAnimBg from './global/PageWithAnimBg.vue';
 import SearchMarker from './global/SearchMarker.vue';
 import SearchLabel from './global/SearchLabel.vue';
 import SearchKeyword from './global/SearchKeyword.vue';
@@ -38,6 +42,8 @@ export default function(app: App) {
 export const components = {
 	I18n: I18n,
 	RouterView: RouterView,
+	NestedRouterView: NestedRouterView,
+	StackingRouterView: StackingRouterView,
 	Mfm: Mfm,
 	MkA: MkA,
 	MkAcct: MkAcct,
@@ -56,6 +62,8 @@ export const components = {
 	MkSpacer: MkSpacer,
 	MkStickyContainer: MkStickyContainer,
 	MkLazy: MkLazy,
+	PageWithHeader: PageWithHeader,
+	PageWithAnimBg: PageWithAnimBg,
 	SearchMarker: SearchMarker,
 	SearchLabel: SearchLabel,
 	SearchKeyword: SearchKeyword,
@@ -65,6 +73,8 @@ declare module '@vue/runtime-core' {
 	export interface GlobalComponents {
 		I18n: typeof I18n;
 		RouterView: typeof RouterView;
+		NestedRouterView: typeof NestedRouterView;
+		StackingRouterView: typeof StackingRouterView;
 		Mfm: typeof Mfm;
 		MkA: typeof MkA;
 		MkAcct: typeof MkAcct;
@@ -83,6 +93,8 @@ declare module '@vue/runtime-core' {
 		MkSpacer: typeof MkSpacer;
 		MkStickyContainer: typeof MkStickyContainer;
 		MkLazy: typeof MkLazy;
+		PageWithHeader: typeof PageWithHeader;
+		PageWithAnimBg: typeof PageWithAnimBg;
 		SearchMarker: typeof SearchMarker;
 		SearchLabel: typeof SearchLabel;
 		SearchKeyword: typeof SearchKeyword;
