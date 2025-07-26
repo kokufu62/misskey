@@ -254,11 +254,19 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		if (data.visibility === 'public' && data.channel == null) {
 			const sensitiveWords = this.meta.sensitiveWords;
+			const userPolicies = await this.roleService.getUserPolicies(user.id);
+
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
-			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
+			} else if (userPolicies.canPublicNote === false) {
 				data.visibility = 'home';
 			}
+
+			if (userPolicies.onlyFollowersNote === true) {
+				data.visibility = 'followers';
+			}
+		} else if (data.visibility === 'home' && (await this.roleService.getUserPolicies(user.id)).onlyFollowersNote === true) {
+			data.visibility = 'followers';
 		}
 
 		const hasProhibitedWords = this.checkProhibitedWordsContain({

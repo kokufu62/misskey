@@ -80,6 +80,7 @@ export const ROLE_POLICIES = [
 	'gtlAvailable',
 	'ltlAvailable',
 	'canPublicNote',
+	'onlyFollowersNote',
 	'mentionLimit',
 	'canInvite',
 	'inviteLimit',

@@ -7655,6 +7655,10 @@ export interface Locale extends ILocale {
              * パブリック投稿の許可
              */
             "canPublicNote": string;
+						/**
+						 * フォロワーのみの投稿の許可
+						 */
+						"onlyFollowersNote": string;
             /**
              * ノート内の最大メンション数
              */

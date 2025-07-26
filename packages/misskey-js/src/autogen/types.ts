@@ -5194,6 +5194,7 @@ export type components = {
             gtlAvailable: boolean;
             ltlAvailable: boolean;
             canPublicNote: boolean;
+						onlyFollowersNote: boolean;
             mentionLimit: number;
             canInvite: boolean;
             inviteLimit: number;
