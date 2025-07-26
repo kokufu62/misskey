@@ -181,7 +181,7 @@ export const packedRolePoliciesSchema = {
 			optional: false, nullable: false,
 		},
 		onlyFollowersNote: {
-			type: 'boolean'
+			type: 'boolean',
 			optional: false, nullable: false
 		},
 		mentionLimit: {
