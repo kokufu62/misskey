@@ -29609,6 +29609,8 @@ export interface operations {
                     text?: string | null;
                     fileIds?: string[];
                     mediaIds?: string[];
+                    /** Format: date-time */
+                    createdAt?: string | null;
                     poll?: {
                         choices: string[];
                         multiple?: boolean;

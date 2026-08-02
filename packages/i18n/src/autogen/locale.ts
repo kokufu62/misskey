@@ -5624,6 +5624,18 @@ export interface Locale extends ILocale {
      */
     "scheduled": string;
     /**
+     * 過去の日時で投稿
+     */
+    "postWithPastDate": string;
+    /**
+     * {x} として投稿します
+     */
+    "postWithPastDateOnX": ParameterizedString<"x">;
+    /**
+     * 過去の日時を指定してください
+     */
+    "cannotSpecifyFutureDateForPastPost": string;
+    /**
      * ウィジェット
      */
     "widgets": string;
