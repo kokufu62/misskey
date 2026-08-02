@@ -70,6 +70,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 		</I18n> - <button class="_textButton" @click="cancelSchedule()">{{ i18n.ts.cancel }}</button>
 	</MkInfo>
+	<MkInfo v-if="specifiedCreatedAt != null" :class="$style.scheduledAt">
+		<I18n :src="i18n.ts.postWithPastDateOnX" tag="span">
+			<template #x>
+				<MkTime :time="specifiedCreatedAt" :mode="'detail'" style="font-weight: bold;"/>
+			</template>
+		</I18n> - <button class="_textButton" @click="cancelSpecifiedCreatedAt()">{{ i18n.ts.cancel }}</button>
+	</MkInfo>
 	<MkInfo v-if="hasNotSpecifiedMentions" warn :class="$style.hasNotSpecifiedMentions">{{ i18n.ts.notSpecifiedMentionWarning }} - <button class="_textButton" @click="addMissingMention()">{{ i18n.ts.add }}</button></MkInfo>
 	<div v-show="useCw" :class="$style.cwOuter">
 		<input ref="cwInputEl" v-model="cw" :class="$style.cw" :placeholder="i18n.ts.annotation" @keydown="onKeydown" @keyup="onKeyup" @compositionend="onCompositionEnd">
@@ -212,6 +219,7 @@ if (props.initialVisibleUsers) {
 }
 const reactionAcceptance = ref(store.s.reactionAcceptance);
 const scheduledAt = ref<number | null>(null);
+const specifiedCreatedAt = ref<number | null>(null);
 const draghover = ref(false);
 const quoteId = ref<string | null>(null);
 const hasNotSpecifiedMentions = ref(false);
@@ -289,7 +297,17 @@ const submitText = computed((): string => {
 });
 
 const submitIcon = computed((): string => {
-	return posted.value ? 'ti ti-check' : scheduledAt.value != null ? 'ti ti-calendar-time' : replyTargetNote.value ? 'ti ti-arrow-back-up' : renoteTargetNote.value ? 'ti ti-quote' : 'ti ti-send';
+	return posted.value
+		? 'ti ti-check'
+		: scheduledAt.value != null
+			? 'ti ti-calendar-time'
+			: specifiedCreatedAt.value != null
+				? 'ti ti-history'
+				: replyTargetNote.value
+					? 'ti ti-arrow-back-up'
+					: renoteTargetNote.value
+						? 'ti ti-quote'
+						: 'ti ti-send';
 });
 
 const textLength = computed((): number => {
@@ -438,6 +456,7 @@ function watchForDraft() {
 	watch(quoteId, () => saveDraft());
 	watch(reactionAcceptance, () => saveDraft());
 	watch(scheduledAt, () => saveDraft());
+	watch(specifiedCreatedAt, () => saveDraft());
 }
 
 function checkMissingMention() {
@@ -668,7 +687,13 @@ function showOtherSettings() {
 		action: () => {
 			schedule();
 		},
-	}] : []), { type: 'divider' }, {
+	}] : []), {
+		icon: 'ti ti-history',
+		text: i18n.ts.postWithPastDate + '...',
+		action: () => {
+			specifyPastDate();
+		},
+	}, { type: 'divider' }, {
 		type: 'switch',
 		icon: 'ti ti-eye',
 		text: i18n.ts.preview,
@@ -719,6 +744,7 @@ function clear() {
 	poll.value = null;
 	quoteId.value = null;
 	scheduledAt.value = null;
+	specifiedCreatedAt.value = null;
 	uploader.reset();
 }
 
@@ -876,6 +902,7 @@ type StoredDrafts = {
 			quoteId: string | null;
 			reactionAcceptance: 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null;
 			scheduledAt: number | null;
+			specifiedCreatedAt?: number | null;
 		};
 	};
 };
@@ -899,6 +926,7 @@ function saveDraft() {
 			quoteId: quoteId.value,
 			reactionAcceptance: reactionAcceptance.value,
 			scheduledAt: scheduledAt.value,
+			specifiedCreatedAt: specifiedCreatedAt.value,
 		},
 	};
 
@@ -1031,6 +1059,7 @@ async function post(ev?: PointerEvent) {
 		visibility: visibility.value,
 		visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(u => u.id) : undefined,
 		reactionAcceptance: reactionAcceptance.value,
+		createdAt: specifiedCreatedAt.value ? new Date(specifiedCreatedAt.value).toISOString() : undefined,
 	};
 
 	if (withHashtags.value && hashtags.value && hashtags.value.trim() !== '') {
@@ -1359,10 +1388,32 @@ async function schedule() {
 	if (result.getTime() <= Date.now()) return;
 
 	scheduledAt.value = result.getTime();
+	specifiedCreatedAt.value = null;
 }
 
 function cancelSchedule() {
 	scheduledAt.value = null;
+}
+
+async function specifyPastDate() {
+	const { canceled, result } = await os.inputDatetime({
+		title: i18n.ts.postWithPastDate,
+	});
+	if (canceled) return;
+	if (result.getTime() > Date.now()) {
+		await os.alert({
+			type: 'error',
+			text: i18n.ts.cannotSpecifyFutureDateForPastPost,
+		});
+		return;
+	}
+
+	specifiedCreatedAt.value = result.getTime();
+	scheduledAt.value = null;
+}
+
+function cancelSpecifiedCreatedAt() {
+	specifiedCreatedAt.value = null;
 }
 
 function showTour() {
@@ -1439,6 +1490,7 @@ onMounted(() => {
 				quoteId.value = draft.data.quoteId;
 				reactionAcceptance.value = draft.data.reactionAcceptance;
 				scheduledAt.value = draft.data.scheduledAt ?? null;
+				specifiedCreatedAt.value = draft.data.specifiedCreatedAt ?? null;
 			}
 		}
 
