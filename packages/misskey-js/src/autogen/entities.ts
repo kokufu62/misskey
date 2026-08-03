@@ -548,15 +548,6 @@ export type NotesShowPartialBulkRequest = operations['notes___show-partial-bulk'
 export type NotesShowPartialBulkResponse = operations['notes___show-partial-bulk']['responses']['200']['content']['application/json'];
 export type NotesStateRequest = operations['notes___state']['requestBody']['content']['application/json'];
 export type NotesStateResponse = operations['notes___state']['responses']['200']['content']['application/json'];
-export type NotesUpdateRequest = {
-	noteId: string;
-	text?: string | null;
-	cw?: string | null;
-	fileIds?: string[];
-};
-export type NotesUpdateResponse = {
-	updatedNote: operations['notes___show']['responses']['200']['content']['application/json'];
-};
 export type NotesThreadMutingCreateRequest = operations['notes___thread-muting___create']['requestBody']['content']['application/json'];
 export type NotesThreadMutingDeleteRequest = operations['notes___thread-muting___delete']['requestBody']['content']['application/json'];
 export type NotesTimelineRequest = operations['notes___timeline']['requestBody']['content']['application/json'];
@@ -564,6 +555,8 @@ export type NotesTimelineResponse = operations['notes___timeline']['responses'][
 export type NotesTranslateRequest = operations['notes___translate']['requestBody']['content']['application/json'];
 export type NotesTranslateResponse = operations['notes___translate']['responses']['200']['content']['application/json'];
 export type NotesUnrenoteRequest = operations['notes___unrenote']['requestBody']['content']['application/json'];
+export type NotesUpdateRequest = operations['notes___update']['requestBody']['content']['application/json'];
+export type NotesUpdateResponse = operations['notes___update']['responses']['200']['content']['application/json'];
 export type NotesUserListTimelineRequest = operations['notes___user-list-timeline']['requestBody']['content']['application/json'];
 export type NotesUserListTimelineResponse = operations['notes___user-list-timeline']['responses']['200']['content']['application/json'];
 export type NotificationsCreateRequest = operations['notifications___create']['requestBody']['content']['application/json'];

@@ -666,15 +666,21 @@ function showOtherSettings() {
 		props: {
 			textLength: textLength,
 		},
-	}, { type: 'divider' }, {
+	}, {
+		type: 'divider',
+	}, {
 		icon: reactionAcceptanceIcon,
 		text: i18n.ts.reactionAcceptance,
 		caption: reactionAcceptanceCaption,
 		action: () => {
 			toggleReactionAcceptance();
 		},
-	}, ...(isEdit.value ? [] : [
-		{ type: 'divider' }, {
+	}];
+
+	if (!isEdit.value) {
+		menuItems.push({
+			type: 'divider',
+		}, {
 			type: 'button',
 			text: i18n.ts._drafts.saveToDraft,
 			icon: 'ti ti-cloud-upload',
@@ -687,38 +693,52 @@ function showOtherSettings() {
 				}
 				saveServerDraft();
 			},
-		}, ...($i.policies.scheduledNoteLimit > 0 ? [{
-			icon: 'ti ti-calendar-time',
-			text: i18n.ts.schedulePost + '...',
-			action: () => {
-				schedule();
-			},
-		}] : []), {
+		});
+
+		if ($i.policies.scheduledNoteLimit > 0) {
+			menuItems.push({
+				icon: 'ti ti-calendar-time',
+				text: i18n.ts.schedulePost + '...',
+				action: () => {
+					schedule();
+				},
+			});
+		}
+
+		menuItems.push({
 			icon: 'ti ti-history',
 			text: i18n.ts.postWithPastDate + '...',
 			action: () => {
 				specifyPastDate();
 			},
-		},
-	]), { type: 'divider' }, {
+		});
+	}
+
+	menuItems.push({
+		type: 'divider',
+	}, {
 		type: 'switch',
 		icon: 'ti ti-eye',
 		text: i18n.ts.preview,
 		ref: showPreview,
-	}, ...(isEdit.value ? [] : [{
-		icon: 'ti ti-trash',
-		text: i18n.ts.reset,
-		danger: true,
-		action: async () => {
-			if (props.mock) return;
-			const { canceled } = await os.confirm({
-				type: 'question',
-				text: i18n.ts.resetAreYouSure,
-			});
-			if (canceled) return;
-			clear();
-		},
-	}])];
+	});
+
+	if (!isEdit.value) {
+		menuItems.push({
+			icon: 'ti ti-trash',
+			text: i18n.ts.reset,
+			danger: true,
+			action: async () => {
+				if (props.mock) return;
+				const { canceled } = await os.confirm({
+					type: 'question',
+					text: i18n.ts.resetAreYouSure,
+				});
+				if (canceled) return;
+				clear();
+			},
+		});
+	}
 
 	os.popupMenu(menuItems, otherSettingsButton.value);
 }

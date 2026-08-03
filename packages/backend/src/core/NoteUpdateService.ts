@@ -154,9 +154,10 @@ export class NoteUpdateService {
 			const profiles = await this.userProfilesRepository.findBy({ userId: In(note.mentions) });
 			note.mentionedRemoteUsers = JSON.stringify(mentionedUsers.filter(u => this.userEntityService.isRemoteUser(u)).map(u => {
 				const profile = profiles.find(p => p.userId === u.id);
+				const url = profile != null ? profile.url : null;
 				return {
-					uri: this.userEntityService.genRemoteUserUri(u, profile?.inbox),
-					url: profile?.url ?? undefined,
+					uri: (u as MiRemoteUser).uri,
+					url: url ?? undefined,
 					username: u.username,
 					host: u.host,
 				};

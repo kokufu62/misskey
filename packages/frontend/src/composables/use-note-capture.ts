@@ -158,12 +158,11 @@ function realtimeSubscribe(props: {
 			case 'updated': {
 				globalEvents.emit('noteUpdated', {
 					id,
-					updatedAt: body.updatedAt,
 					text: body.text,
 					cw: body.cw,
 					fileIds: body.fileIds,
 					files: body.files,
-				} as Misskey.entities.Note);
+				});
 				break;
 			}
 		}
