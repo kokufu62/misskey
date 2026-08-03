@@ -3308,6 +3308,15 @@ export type paths = {
          */
         post: operations['notes___unrenote'];
     };
+    '/notes/update': {
+        /**
+         * notes/update
+         * @description No description provided.
+         *
+         *     **Credential required**: *Yes* / **Permission**: *write:notes*
+         */
+        post: operations['notes___update'];
+    };
     '/notes/user-list-timeline': {
         /**
          * notes/user-list-timeline
@@ -5356,7 +5365,7 @@ export type components = {
             gtlAvailable: boolean;
             ltlAvailable: boolean;
             canPublicNote: boolean;
-						onlyFollowersNote: boolean;
+            onlyFollowersNote: boolean;
             mentionLimit: number;
             canInvite: boolean;
             inviteLimit: number;
@@ -29606,11 +29615,10 @@ export interface operations {
                     renoteId?: string | null;
                     /** Format: misskey:id */
                     channelId?: string | null;
+                    createdAt?: string | null;
                     text?: string | null;
                     fileIds?: string[];
                     mediaIds?: string[];
-                    /** Format: date-time */
-                    createdAt?: string | null;
                     poll?: {
                         choices: string[];
                         multiple?: boolean;
@@ -31871,6 +31879,86 @@ export interface operations {
             204: {
                 headers: {
                     [name: string]: unknown;
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Too many requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
+    notes___update: {
+        requestBody: {
+            content: {
+                'application/json': {
+                    /** Format: misskey:id */
+                    noteId: string;
+                    text?: string | null;
+                    cw?: string | null;
+                    fileIds?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK (with results) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': {
+                        updatedNote: components['schemas']['Note'];
+                    };
                 };
             };
             /** @description Client error */
