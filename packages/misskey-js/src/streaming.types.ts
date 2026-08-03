@@ -319,6 +319,15 @@ export type NoteUpdatedEvent = { id: Note['id'] } & ({
 		choice: number;
 		userId: User['id'];
 	};
+} | {
+	type: 'updated';
+	body: {
+		updatedAt: string;
+		text?: string | null;
+		cw?: string | null;
+		fileIds?: string[];
+		files?: Note['files'];
+	};
 });
 
 export type BroadcastEvents = {

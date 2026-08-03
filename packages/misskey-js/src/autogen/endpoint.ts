@@ -545,6 +545,8 @@ import type {
 	NotesShowPartialBulkResponse,
 	NotesStateRequest,
 	NotesStateResponse,
+	NotesUpdateRequest,
+	NotesUpdateResponse,
 	NotesThreadMutingCreateRequest,
 	NotesThreadMutingDeleteRequest,
 	NotesTimelineRequest,
@@ -1025,6 +1027,7 @@ export type Endpoints = {
 	'notes/show': { req: NotesShowRequest; res: NotesShowResponse };
 	'notes/show-partial-bulk': { req: NotesShowPartialBulkRequest; res: NotesShowPartialBulkResponse };
 	'notes/state': { req: NotesStateRequest; res: NotesStateResponse };
+	'notes/update': { req: NotesUpdateRequest; res: NotesUpdateResponse };
 	'notes/thread-muting/create': { req: NotesThreadMutingCreateRequest; res: EmptyResponse };
 	'notes/thread-muting/delete': { req: NotesThreadMutingDeleteRequest; res: EmptyResponse };
 	'notes/timeline': { req: NotesTimelineRequest; res: NotesTimelineResponse };

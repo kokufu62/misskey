@@ -154,6 +154,18 @@ function realtimeSubscribe(props: {
 				globalEvents.emit('noteDeleted', id);
 				break;
 			}
+
+			case 'updated': {
+				globalEvents.emit('noteUpdated', {
+					id,
+					updatedAt: body.updatedAt,
+					text: body.text,
+					cw: body.cw,
+					fileIds: body.fileIds,
+					files: body.files,
+				} as Misskey.entities.Note);
+				break;
+			}
 		}
 	}
 

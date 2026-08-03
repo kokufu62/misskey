@@ -14,13 +14,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<header :class="$style.header">
 		<div :class="$style.headerLeft">
 			<button v-if="!fixed" :class="$style.cancel" class="_button" @click="cancel"><i class="ti ti-x"></i></button>
-			<button ref="accountMenuEl" v-click-anime v-tooltip="i18n.ts.account" class="_button" @click="openAccountMenu">
+			<button ref="accountMenuEl" v-click-anime v-tooltip="i18n.ts.account" class="_button" :disabled="isEdit" @click="openAccountMenu">
 				<img :class="$style.avatar" :src="(postAccount ?? $i).avatarUrl" style="border-radius: 100%;"/>
 			</button>
 		</div>
 		<div :class="$style.headerRight">
 			<template v-if="!(targetChannel != null && fixed)">
-				<button v-if="targetChannel == null" ref="visibilityButton" v-tooltip="i18n.ts.visibility" :class="['_button', $style.headerRightItem, $style.visibility]" @click="setVisibility">
+				<button v-if="targetChannel == null" ref="visibilityButton" v-tooltip="i18n.ts.visibility" :class="['_button', $style.headerRightItem, $style.visibility]" :disabled="isEdit" @click="setVisibility">
 					<span v-if="visibility === 'public'"><i class="ti ti-world"></i></span>
 					<span v-if="visibility === 'home'"><i class="ti ti-home"></i></span>
 					<span v-if="visibility === 'followers'"><i class="ti ti-lock"></i></span>
@@ -32,7 +32,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.headerRightButtonText">{{ targetChannel.name }}</span>
 				</button>
 			</template>
-			<button v-if="visibility !== 'specified'" v-tooltip="i18n.ts._visibility.disableFederation" class="_button" :class="[$style.headerRightItem, { [$style.danger]: localOnly }]" :disabled="targetChannel != null" @click="toggleLocalOnly">
+			<button v-if="visibility !== 'specified'" v-tooltip="i18n.ts._visibility.disableFederation" class="_button" :class="[$style.headerRightItem, { [$style.danger]: localOnly }]" :disabled="isEdit || targetChannel != null" @click="toggleLocalOnly">
 				<span v-if="!localOnly"><i class="ti ti-rocket"></i></span>
 				<span v-else><i class="ti ti-rocket-off"></i></span>
 			</button>
@@ -103,7 +103,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="$style.footerLeft">
 			<button v-tooltip="i18n.ts.attachFile + ' (' + i18n.ts.upload + ')'" class="_button" :class="$style.footerButton" @click="chooseFileFromPc"><i class="ti ti-photo-plus"></i></button>
 			<button v-tooltip="i18n.ts.attachFile + ' (' + i18n.ts.fromDrive + ')'" class="_button" :class="$style.footerButton" @click="chooseFileFromDrive"><i class="ti ti-cloud-download"></i></button>
-			<button v-tooltip="i18n.ts.poll" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: poll }]" @click="togglePoll"><i class="ti ti-chart-arrows"></i></button>
+			<button v-tooltip="i18n.ts.poll" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: poll }]" :disabled="isEdit" @click="togglePoll"><i class="ti ti-chart-arrows"></i></button>
 			<button v-tooltip="i18n.ts.useCw" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: useCw }]" @click="useCw = !useCw"><i class="ti ti-eye-off"></i></button>
 			<button v-tooltip="i18n.ts.hashtags" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: withHashtags }]" @click="withHashtags = !withHashtags"><i class="ti ti-hash"></i></button>
 			<button v-tooltip="i18n.ts.mention" class="_button" :class="$style.footerButton" @click="insertMention"><i class="ti ti-at"></i></button>
@@ -202,6 +202,7 @@ const submitButtonEl = useTemplateRef('submitButtonEl');
 
 const posting = ref(false);
 const posted = ref(false);
+const isEdit = computed(() => props.editNote != null);
 const text = ref(props.initialText ?? '');
 const files = ref(props.initialFiles ?? []);
 const poll = ref<PollEditorModelValue | null>(null);
@@ -287,27 +288,31 @@ const placeholder = computed((): string => {
 });
 
 const submitText = computed((): string => {
-	return scheduledAt.value != null
-		? i18n.ts.schedule
-		: renoteTargetNote.value
-			? i18n.ts.quote
-			: replyTargetNote.value
-				? i18n.ts.reply
-				: i18n.ts.note;
+	return isEdit.value
+		? i18n.ts.edit
+		: scheduledAt.value != null
+			? i18n.ts.schedule
+			: renoteTargetNote.value
+				? i18n.ts.quote
+				: replyTargetNote.value
+					? i18n.ts.reply
+					: i18n.ts.note;
 });
 
 const submitIcon = computed((): string => {
 	return posted.value
 		? 'ti ti-check'
-		: scheduledAt.value != null
-			? 'ti ti-calendar-time'
-			: specifiedCreatedAt.value != null
-				? 'ti ti-history'
-				: replyTargetNote.value
-					? 'ti ti-arrow-back-up'
-					: renoteTargetNote.value
-						? 'ti ti-quote'
-						: 'ti ti-send';
+		: isEdit.value
+			? 'ti ti-check'
+			: scheduledAt.value != null
+				? 'ti ti-calendar-time'
+				: specifiedCreatedAt.value != null
+					? 'ti ti-history'
+					: replyTargetNote.value
+						? 'ti ti-arrow-back-up'
+						: renoteTargetNote.value
+							? 'ti ti-quote'
+							: 'ti ti-send';
 });
 
 const textLength = computed((): number => {
@@ -655,7 +660,7 @@ function showOtherSettings() {
 			break;
 	}
 
-	const menuItems = [{
+	const menuItems: MenuItem[] = [{
 		type: 'component',
 		component: XTextCounter,
 		props: {
@@ -668,37 +673,39 @@ function showOtherSettings() {
 		action: () => {
 			toggleReactionAcceptance();
 		},
-	}, { type: 'divider' }, {
-		type: 'button',
-		text: i18n.ts._drafts.saveToDraft,
-		icon: 'ti ti-cloud-upload',
-		action: async () => {
-			if (!canSaveAsServerDraft.value) {
-				return os.alert({
-					type: 'error',
-					text: i18n.ts._drafts.cannotCreateDraft,
-				});
-			}
-			saveServerDraft();
+	}, ...(isEdit.value ? [] : [
+		{ type: 'divider' }, {
+			type: 'button',
+			text: i18n.ts._drafts.saveToDraft,
+			icon: 'ti ti-cloud-upload',
+			action: async () => {
+				if (!canSaveAsServerDraft.value) {
+					return os.alert({
+						type: 'error',
+						text: i18n.ts._drafts.cannotCreateDraft,
+					});
+				}
+				saveServerDraft();
+			},
+		}, ...($i.policies.scheduledNoteLimit > 0 ? [{
+			icon: 'ti ti-calendar-time',
+			text: i18n.ts.schedulePost + '...',
+			action: () => {
+				schedule();
+			},
+		}] : []), {
+			icon: 'ti ti-history',
+			text: i18n.ts.postWithPastDate + '...',
+			action: () => {
+				specifyPastDate();
+			},
 		},
-	}, ...($i.policies.scheduledNoteLimit > 0 ? [{
-		icon: 'ti ti-calendar-time',
-		text: i18n.ts.schedulePost + '...',
-		action: () => {
-			schedule();
-		},
-	}] : []), {
-		icon: 'ti ti-history',
-		text: i18n.ts.postWithPastDate + '...',
-		action: () => {
-			specifyPastDate();
-		},
-	}, { type: 'divider' }, {
+	]), { type: 'divider' }, {
 		type: 'switch',
 		icon: 'ti ti-eye',
 		text: i18n.ts.preview,
 		ref: showPreview,
-	}, {
+	}, ...(isEdit.value ? [] : [{
 		icon: 'ti ti-trash',
 		text: i18n.ts.reset,
 		danger: true,
@@ -711,7 +718,7 @@ function showOtherSettings() {
 			if (canceled) return;
 			clear();
 		},
-	}] satisfies MenuItem[];
+	}])];
 
 	os.popupMenu(menuItems, otherSettingsButton.value);
 }
@@ -1105,6 +1112,60 @@ async function post(ev?: PointerEvent) {
 		}
 	}
 
+	if (props.editNote) {
+		let updateData = {
+			noteId: props.editNote.id,
+			text: text.value === '' ? null : text.value,
+			cw: useCw.value ? cw.value ?? '' : null,
+			fileIds: files.value.map(f => f.id),
+		};
+
+		if (withHashtags.value && hashtags.value && hashtags.value.trim() !== '') {
+			const hashtags_ = hashtags.value.trim().split(' ').map(x => x.startsWith('#') ? x : '#' + x).join(' ');
+			if (!updateData.text) {
+				updateData.text = hashtags_;
+			} else {
+				const postTextLines = updateData.text.split('\n');
+				if (postTextLines[postTextLines.length - 1].trim() === '') {
+					postTextLines[postTextLines.length - 1] += hashtags_;
+				} else {
+					postTextLines[postTextLines.length - 1] += ' ' + hashtags_;
+				}
+				updateData.text = postTextLines.join('\n');
+			}
+		}
+
+		posting.value = true;
+		misskeyApi('notes/update', updateData, token).then((res) => {
+			if (props.freezeAfterPosted) {
+				posted.value = true;
+			} else {
+				clear();
+			}
+
+			globalEvents.emit('noteUpdated', res.updatedNote);
+
+			nextTick(() => {
+				emit('posted');
+				if (updateData.text && updateData.text !== '') {
+					const hashtags_ = mfm.parse(updateData.text).map(x => x.type === 'hashtag' && x.props.hashtag).filter(x => x) as string[];
+					const history = JSON.parse(miLocalStorage.getItem('hashtags') ?? '[]') as string[];
+					miLocalStorage.setItem('hashtags', JSON.stringify(unique(hashtags_.concat(history))));
+				}
+				posting.value = false;
+				postAccount.value = null;
+			});
+		}).catch((err) => {
+			posting.value = false;
+			os.alert({
+				type: 'error',
+				text: err.message ?? 'Failed to update note',
+			});
+		});
+
+		return;
+	}
+
 	posting.value = true;
 	misskeyApi('notes/create', postData, token).then((res) => {
 		if (props.freezeAfterPosted) {
@@ -1494,8 +1555,31 @@ onMounted(() => {
 			}
 		}
 
-		// 削除して編集
-		if (props.initialNote) {
+		// ノート編集
+		if (props.editNote) {
+			const edit = props.editNote;
+			text.value = edit.text ? edit.text : '';
+			useCw.value = edit.cw != null;
+			cw.value = edit.cw ?? null;
+			visibility.value = edit.visibility;
+			localOnly.value = edit.localOnly ?? false;
+			files.value = edit.files ?? [];
+			if (edit.poll) {
+				poll.value = {
+					choices: edit.poll.choices.map(x => x.text),
+					multiple: edit.poll.multiple,
+					expiresAt: edit.poll.expiresAt ? (new Date(edit.poll.expiresAt)).getTime() : null,
+					expiredAfter: null,
+				};
+			}
+			if (edit.visibleUserIds) {
+				misskeyApi('users/show', { userIds: edit.visibleUserIds }).then(users => {
+					users.forEach(u => pushVisibleUser(u));
+				});
+			}
+			quoteId.value = renoteTargetNote.value ? renoteTargetNote.value.id : null;
+			reactionAcceptance.value = edit.reactionAcceptance;
+		} else if (props.initialNote) {
 			const init = props.initialNote;
 			text.value = init.text ? init.text : '';
 			useCw.value = init.cw != null;
@@ -1520,7 +1604,9 @@ onMounted(() => {
 			reactionAcceptance.value = init.reactionAcceptance;
 		}
 
-		nextTick(() => watchForDraft());
+		if (!isEdit.value) {
+			nextTick(() => watchForDraft());
+		}
 	});
 });
 

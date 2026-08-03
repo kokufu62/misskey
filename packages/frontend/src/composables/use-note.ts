@@ -170,6 +170,23 @@ export function useNote(
 		}
 	});
 
+	useGlobalEvent('noteUpdated', (updatedNote) => {
+		if (updatedNote.id === appearNote.id) {
+			if (updatedNote.text !== undefined) appearNote.text = updatedNote.text;
+			if (updatedNote.cw !== undefined) appearNote.cw = updatedNote.cw;
+			if (updatedNote.files !== undefined) appearNote.files = updatedNote.files;
+			if (updatedNote.fileIds !== undefined) appearNote.fileIds = updatedNote.fileIds;
+			if (updatedNote.updatedAt !== undefined) appearNote.updatedAt = updatedNote.updatedAt;
+		}
+		if (updatedNote.id === rawNote.id && rawNote.id !== appearNote.id) {
+			if (updatedNote.text !== undefined) rawNote.text = updatedNote.text;
+			if (updatedNote.cw !== undefined) rawNote.cw = updatedNote.cw;
+			if (updatedNote.files !== undefined) rawNote.files = updatedNote.files;
+			if (updatedNote.fileIds !== undefined) rawNote.fileIds = updatedNote.fileIds;
+			if (updatedNote.updatedAt !== undefined) rawNote.updatedAt = updatedNote.updatedAt;
+		}
+	});
+
 	// ツールチップのセットアップ (Mockでない場合のみ)
 	if (!props.mock) {
 		if (els.renoteButton != null) {
