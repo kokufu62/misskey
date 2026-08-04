@@ -223,8 +223,8 @@ export class Paginator<
 			return;
 		}
 
-		// 逆順で返ってくるので
-		if ((this.initialId || this.initialDate) && this.initialDirection === 'newer') {
+		// 逆順で返ってくるので (画面表示順が最新順の場合のみ反転する)
+		if ((this.initialId || this.initialDate) && this.initialDirection === 'newer' && this.order.value === 'newest') {
 			apiRes.reverse();
 		}
 
