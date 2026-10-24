@@ -14,7 +14,7 @@ import { MiNote } from '@/models/Note.js';
 import type { DriveFilesRepository, InstancesRepository, MiMeta, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiUser, MiLocalUser, MiRemoteUser } from '@/models/User.js';
-import { normalizeForSearch } from '@/misc/normalize-for-search.js';
+import { normalizeTag } from '@/misc/normalize-tag.js';
 import { RelayService } from '@/core/RelayService.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
@@ -147,7 +147,7 @@ export class NoteUpdateService {
 			note.attachedFileTypes = files.map(f => f.type);
 		}
 		note.emojis = emojis;
-		note.tags = tags.map(tag => normalizeForSearch(tag));
+		note.tags = tags.map(tag => normalizeTag(tag));
 
 		if (mentionedUsers.length > 0) {
 			note.mentions = mentionedUsers.map(u => u.id);
